@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id                Int       @id @default(autoincrement())
+  email             String    @unique
+  name              String
+  phone             String?   @unique
+  password          String
+  email_verified_at DateTime?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+  posts             posts[]
+}
+
+model posts {
+  id               Int                @id @default(autoincrement())
+  title            String
+  description      String
+  author_id        Int
+  published        Boolean
+  created_at       DateTime           @default(now())
+  updated_at       DateTime           @updatedAt
+  author           users              @relation(fields: [author_id], references: [id])
+  post_attachments post_attachments[]
+}
+
+model post_attachments {
+  id         Int      @id @default(autoincrement())
+  post_id    Int
+  path       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  attachment posts    @relation(fields: [post_id], references: [id])
+}
+
+model followers {
+  id           Int      @id @default(autoincrement())
+  following_id Int
+  follower_id  Int
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+}
